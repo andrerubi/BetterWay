@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">BetterWay</string>
+    <string name="group_name">Insert group name</string>
+    <string name="people_count">How many are you?</string>
+    <string name="children">Children</string>
+    <string name="handicap">People with handicap</string>
+    <string name="button_register">Register</string>
+    <string name="goto_login">Login to a group</string>
+    <string name="goto_register">Register a group</string>
+    <string name="login_msg">If you already have a group registered in our system, please insert here
+        the secret given PIN. If you don\'t know your PIN, just ask to someone logged in your group, he will
+        find it in the homepage.</string>
+    <string name="pin">Insert secret PIN</string>
+    <string name="gr_name">Group name: </string>
+    <string name="gr_people">Members: </string>
+    <string name="gr_key">PIN: </string>
+    <string name="gr_info">About: </string>
+    <string name="login">Log in</string>
+    <string name="help">We need help</string>
+    <string name="safe">We are safe</string>
+    </resources>
