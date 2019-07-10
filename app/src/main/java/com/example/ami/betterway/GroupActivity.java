@@ -18,7 +18,7 @@ import com.google.firebase.database.ValueEventListener;
 public class GroupActivity extends AppCompatActivity {
 
     Group group;
-    DatabaseReference myRef = FirebaseDatabase.getInstance().getReference().child("Group");
+    DatabaseReference myRef = FirebaseDatabase.getInstance().getReference();
     TextView gr_name, gr_info, gr_key, gr_people;
     String info;
     Button safe;
@@ -70,10 +70,17 @@ public class GroupActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 /*Retriving group info from db*/
-                String name = dataSnapshot.child("groupName").getValue(String.class);
-                Boolean child = dataSnapshot.child("children").getValue(Boolean.class);
-                Boolean handicap = dataSnapshot.child("handicap").getValue(Boolean.class);
-                int people = dataSnapshot.child("people").getValue(int.class);
+                String name = dataSnapshot.child("Group").child("groupName").getValue(String.class);
+                Boolean child = dataSnapshot.child("Group").child("children").getValue(Boolean.class);
+                Boolean handicap = dataSnapshot.child("Group").child("handicap").getValue(Boolean.class);
+                int people = dataSnapshot.child("Group").child("people").getValue(int.class);
+                int fireDetected = dataSnapshot.child("fireDetected").getValue(int.class);
+                int countRoom1 =  dataSnapshot.child("peopleCountePath").child("Room 1").getValue(int.class); //people in room 1
+                int countRoom2 =  dataSnapshot.child("peopleCountePath").child("Room 2").getValue(int.class); //people in room 2
+                int groupRoom = 1; // TODO: get group room with beacons
+
+                if(fireDetected==1)
+                    calculatePath(groupRoom, countRoom1, countRoom2);
 
                 group = new Group(name, people, child, handicap);  //every logged user has an instance of the same Group object
 
@@ -103,5 +110,34 @@ public class GroupActivity extends AppCompatActivity {
             /* Nothing to do
                 override of onBackPressed method to disable back button
              */
+    }
+
+    public void calculatePath(int groupRoom, int countRoom1, int countRoom2){
+        float ratio = (float)(countRoom1+1)/(countRoom2+1); //+1 to avoid division by zero
+
+        if( groupRoom==1 ){
+            if(ratio < 1.2){
+                /*passa da stanza1*/
+                Toast.makeText(getBaseContext(),"Exit room 1", Toast.LENGTH_LONG).show();
+            }
+            else{
+                /*passa da stanza2*/
+                Toast.makeText(getBaseContext(),"Exit room 2", Toast.LENGTH_LONG).show();
+            }
+        }
+        else{
+            ratio=1/ratio;
+
+            if(ratio < 1.2){
+                /*passa da stanza2*/
+                Toast.makeText(getBaseContext(),"Exit room 2", Toast.LENGTH_LONG).show();
+            }
+            else{
+                /*passa da stanza1*/
+                Toast.makeText(getBaseContext(),"Exit room 1", Toast.LENGTH_LONG).show();
+            }
+        }
+
+
     }
 }
