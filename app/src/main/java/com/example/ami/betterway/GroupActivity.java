@@ -1,6 +1,6 @@
 package com.example.ami.betterway;
 
-import android.accessibilityservice.GestureDescription;
+
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,7 +15,22 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class GroupActivity extends AppCompatActivity {
+import android.os.Bundle;
+import android.os.RemoteException;
+import android.util.Log;
+import android.widget.EditText;
+
+import org.altbeacon.beacon.AltBeacon;
+import org.altbeacon.beacon.Beacon;
+import org.altbeacon.beacon.BeaconConsumer;
+import org.altbeacon.beacon.BeaconManager;
+import org.altbeacon.beacon.Identifier;
+import org.altbeacon.beacon.RangeNotifier;
+import org.altbeacon.beacon.Region;
+
+import java.util.Collection;
+
+public class GroupActivity extends AppCompatActivity implements BeaconConsumer{
 
     Group group;
     DatabaseReference myRef = FirebaseDatabase.getInstance().getReference();
@@ -23,6 +38,9 @@ public class GroupActivity extends AppCompatActivity {
     String info;
     Button safe;
     Button help;
+    private BeaconManager beaconManager = BeaconManager.getInstanceForApplication(this);
+    private Beacon greenBeacon;
+    private Beacon blueBeacon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,7 +155,58 @@ public class GroupActivity extends AppCompatActivity {
                 Toast.makeText(getBaseContext(),"Exit room 1", Toast.LENGTH_LONG).show();
             }
         }
+    }
 
 
+    @Override
+    public void onBeaconServiceConnect() {
+
+        RangeNotifier rangeNotifier = new RangeNotifier() {
+            @Override
+            public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
+
+                if (beacons.size() > 0) {
+                    //Log.d(TAG, "didRangeBeaconsInRegion called with beacon count:  "+beacons.size());
+                    //Beacon firstBeacon = beacons.iterator().next();
+                    //logToDisplay("The first beacon " + firstBeacon.toString() + " is about " + firstBeacon.getDistance() + " meters away.");
+                    for (Beacon var : beacons) {
+                        for (int i = 0; i < 10; i++) {
+                            if (var.getId3().equals(Identifier.fromInt(60004))) {
+                                greenBeacon = var;
+                                //logToDisplay("Green beacon recognised\n");
+                                //logToDisplay("The green beacon is about " + var.getDistance() + " meters away and has an RSSI of " + var.getRssi() + " dB\n");
+                                //logToDisplay("Average RSSI is: " + greenBeacon.getRunningAverageRssi());
+
+                            } else if (var.getId3().equals(Identifier.fromInt(5012))) {
+                                blueBeacon = var;
+                                //logToDisplay("Blue beacon recognised\n");
+                                //logToDisplay("The blue beacon is about " + var.getDistance() + " meters away and has an RSSI of " + var.getRssi() + " dB\n");
+                            }
+                        }
+                    }
+
+                }
+                //logToDisplay("For green beacon, average RSSI: "+ greenBeacon.getRunningAverageRssi() +
+                //    "\nFor blue beacon, average RSSI: "+ blueBeacon.getRunningAverageRssi() +"\n");
+
+                if(greenBeacon.getRunningAverageRssi()>-70 && greenBeacon.getRunningAverageRssi()<-50
+                        && blueBeacon.getRunningAverageRssi()>-90 && blueBeacon.getRunningAverageRssi()<-70)
+                    Toast.makeText(getBaseContext(),"You are in your room! (What is your excuse for this mess?)", Toast.LENGTH_SHORT).show();
+
+                if(greenBeacon.getRunningAverageRssi()>-90 && greenBeacon.getRunningAverageRssi()<-80
+                        && blueBeacon.getRunningAverageRssi()>-60 && blueBeacon.getRunningAverageRssi()<-40)
+                    Toast.makeText(getBaseContext(),"You are in the kitchen! (Drink something, alcohol free)", Toast.LENGTH_SHORT).show();
+
+                if(greenBeacon.getRunningAverageRssi()>-75 && greenBeacon.getRunningAverageRssi()<-65
+                        && blueBeacon.getRunningAverageRssi()>-90 && blueBeacon.getRunningAverageRssi()<-75)
+                    Toast.makeText(getBaseContext(),"You are in Luca's room! (Congratulate him for passing APA)", Toast.LENGTH_SHORT).show();
+            }
+        };
+        try {
+            beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
+            beaconManager.addRangeNotifier(rangeNotifier);
+            beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
+            beaconManager.addRangeNotifier(rangeNotifier);
+        } catch (RemoteException e) {   }
     }
 }
