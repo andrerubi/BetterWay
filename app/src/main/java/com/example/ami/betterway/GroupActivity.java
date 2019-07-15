@@ -38,6 +38,7 @@ public class GroupActivity extends AppCompatActivity implements BeaconConsumer{
     String info;
     Button safe;
     Button help;
+    TextView tmp; /*TODO: remove variable*/
     private BeaconManager beaconManager = BeaconManager.getInstanceForApplication(this);
     private Beacon greenBeacon;
     private Beacon blueBeacon;
@@ -54,6 +55,8 @@ public class GroupActivity extends AppCompatActivity implements BeaconConsumer{
 
         safe = (Button) findViewById(R.id.btn_safe);
         help = (Button) findViewById(R.id.btn_help);
+        tmp = (TextView) findViewById(R.id.tmp);
+
 
 
         safe.setOnClickListener(new View.OnClickListener() {
@@ -191,15 +194,15 @@ public class GroupActivity extends AppCompatActivity implements BeaconConsumer{
 
                 if(greenBeacon.getRunningAverageRssi()>-70 && greenBeacon.getRunningAverageRssi()<-50
                         && blueBeacon.getRunningAverageRssi()>-90 && blueBeacon.getRunningAverageRssi()<-70)
-                    Toast.makeText(getBaseContext(),"You are in your room! (What is your excuse for this mess?)", Toast.LENGTH_SHORT).show();
+                    tmp.setText("Your room");
 
                 if(greenBeacon.getRunningAverageRssi()>-90 && greenBeacon.getRunningAverageRssi()<-80
                         && blueBeacon.getRunningAverageRssi()>-60 && blueBeacon.getRunningAverageRssi()<-40)
-                    Toast.makeText(getBaseContext(),"You are in the kitchen! (Drink something, alcohol free)", Toast.LENGTH_SHORT).show();
+                    tmp.setText("Kitchen");
 
                 if(greenBeacon.getRunningAverageRssi()>-75 && greenBeacon.getRunningAverageRssi()<-65
                         && blueBeacon.getRunningAverageRssi()>-90 && blueBeacon.getRunningAverageRssi()<-75)
-                    Toast.makeText(getBaseContext(),"You are in Luca's room! (Congratulate him for passing APA)", Toast.LENGTH_SHORT).show();
+                    tmp.setText("Luca's room");
             }
         };
         try {
